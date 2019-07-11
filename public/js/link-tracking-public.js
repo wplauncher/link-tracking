@@ -28,5 +28,27 @@
 	 * Although scripts in the WordPress core, Plugins and Themes may be
 	 * practising this, we should strive to set a better example in our own work.
 	 */
-
+	var LinkTracking = {
+		construct:function(){
+			if($('.link_tracking_link')[0]){
+				$('.link_tracking_link').each(function( index ) {
+					LinkTracking.impressions($( this ));
+					LinkTracking.clicks($( this ));
+				});
+			}
+		},
+		clicks:function(_that){
+			_that.bind('click',function(){
+					// send an ajax request that tracks the click
+			});
+		},
+		impressions:function(_that){
+			// send an ajax request that tracks the impression
+		},
+	};
+	$(function() {
+		LinkTracking.construct();
+	});
+	
+	//
 })( jQuery );
