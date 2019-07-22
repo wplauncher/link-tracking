@@ -51,7 +51,12 @@ class Link_Tracking_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+		add_action( 'wp_ajax_nopriv_link_tracking_clicks', array($this,'track_clicks'));
+		
+		add_action( 'wp_ajax_link_tracking_clicks', array($this,'track_clicks'));
+		add_action( 'wp_ajax_nopriv_link_tracking_impressions', array($this,'track_impressions'));
+		
+		add_action( 'wp_ajax_link_tracking_impressions', array($this,'track_impressions'));
 	}
 
 	/**
@@ -95,9 +100,100 @@ class Link_Tracking_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
+		$clickNonce = wp_create_nonce( "link_tracking_click" );
+		$impressionNonce = wp_create_nonce( "link_tracking_impression" );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/link-tracking-public.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script( $this->plugin_name, 'link_tracking_ajax_object', 
+		  	array( 
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'click_nonce'=> $clickNonce,
+				'impression_nonce'=> $impressionNonce
+			) 
+		  );
 
 	}
+	public function track_clicks(){		
+		$nonce = sanitize_text_field($_REQUEST['security']);
+		//$user_id = intval($_REQUEST['uid']);
+		// verify the self created nonce - don't use wp_verify_nonce bc it checks the referring url and it is different 
+		
+		//if(!current_user_can( 'administrator' ) || $payment_processor_nonce != $nonce){
+		//wp_set_current_user( $user_id );
+		if(!wp_verify_nonce($nonce,'link_tracking_clicks')){
+			$data['response'] = 'error'.__LINE__;
+			$data['vars'] = $_POST;
+			// Set content type
+			header('Content-type: application/json');
 
+			// Prevent caching
+			header('Expires: 0');
+			echo json_encode($data);
+			exit();
+		}
+		$post_id = sanitize_text_field($_POST['post_id']);
+		$post_exists = get_post($post_id);
+		if($post_exists){
+			$clicks = get_post_meta($post_id, $this->plugin_name.'_clicks', true );
+			if(!$clicks){
+				$clicks = 1;
+			} else {
+				$clicks = $clicks+1;
+			}
+			update_post_meta($post_id, $this->plugin_name.'_clicks',$clicks);
+		} else {
+			$clicks = '';
+		}
+		$data['response'] = 'success';
+		$data['clicks'] = $clicks;
+		// Set content type
+		header('Content-type: application/json');
+
+		// Prevent caching
+		header('Expires: 0');
+		echo json_encode($data);
+		/* close connection */
+		exit();	
+	}
+	public function track_impressions(){		
+		$nonce = sanitize_text_field($_REQUEST['security']);
+		//$user_id = intval($_REQUEST['uid']);
+		// verify the self created nonce - don't use wp_verify_nonce bc it checks the referring url and it is different 
+		
+		//if(!current_user_can( 'administrator' ) || $payment_processor_nonce != $nonce){
+		//wp_set_current_user( $user_id );
+		if(!wp_verify_nonce($nonce,'link_tracking_impressions')){
+			$data['response'] = 'error'.__LINE__;
+			$data['vars'] = $_POST;
+			// Set content type
+			header('Content-type: application/json');
+
+			// Prevent caching
+			header('Expires: 0');
+			echo json_encode($data);
+			exit();
+		}
+		$post_id = sanitize_text_field($_POST['post_id']);
+		$post_exists = get_post($post_id);
+		if($post_exists){
+			$impressions = get_post_meta($post_id, $this->plugin_name.'_impressions', true );
+			if(!$impressions){
+				$impressions = 1;
+			} else {
+				$impressions = $impressions+1;
+			}
+			update_post_meta($post_id, $this->plugin_name.'_impressions',$impressions);
+		} else {
+			$impressions = '';
+		}
+		$data['response'] = 'success';
+		$data['impressions'] = $impressions;
+		// Set content type
+		header('Content-type: application/json');
+
+		// Prevent caching
+		header('Expires: 0');
+		echo json_encode($data);
+		/* close connection */
+		exit();	
+	}
 }

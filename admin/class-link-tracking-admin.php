@@ -57,7 +57,9 @@ class Link_Tracking_Admin {
 		add_action('add_meta_boxes_link_tracking_links', array( $this, 'setupCustomPostTypeMetaboxes' ));
 		add_action( 'save_post_link_tracking_links', array( $this, 'saveCustomPostTypeMetaBoxData') );
 		add_shortcode( 'link_tracking', array( $this, 'linkTrackingShortcode' ));
-
+		add_action('add_meta_boxes_attachment', array( $this, 'setup_attachment_metaboxes' ));
+		add_action( 'edit_attachment', array( $this, 'save_attachment_meta_box_data') );
+		add_action( 'attachment_updated', array( $this, 'attachment_meta_box_data_updated') );
 	}
 
 	/**
@@ -131,24 +133,132 @@ public function register_custom_post_types(){
 			'taxonomies'=>array('category','post_tag'));
  
 	// Post type, $args - the Post Type string can be MAX 20 characters
-	register_post_type( 'link_tracking_Links', $LinkArgs );
+	register_post_type( 'link_tracking_links', $LinkArgs );
 }
 public function linkTrackingShortcode( $atts, $content = "" ) {
+	//[link_tracking link='29'][/link_tracking]
 	$a = shortcode_atts( array(
 			'link'=>'',	
 			'classes'=>'',
 			'style'=>'',
 			'hidden'=>'',					
 			), $atts );
+	// link is the post id
 	$href = get_post_meta($a['link'], $this->plugin_name.'_url', true );
 	$link_text = get_post_meta($a['link'], $this->plugin_name.'_link_text', true );
 	$target = get_post_meta($a['link'], $this->plugin_name.'_target', true );
 
-	return '<a class="link_tracking_link '.esc_attr($a['classes']).'" target="'.esc_attr($target).'" href="'.esc_attr($href).'" style="'.esc_attr($a['style']).'">'.$link_text.'</a>';
+	return '<a class="link_tracking_link '.esc_attr($a['classes']).'" data-postId="'.esc_attr($a['link']).'" target="'.esc_attr($target).'" href="'.esc_attr($href).'" style="'.esc_attr($a['style']).'">'.$link_text.'</a>';
 	}
 public function addPluginAdminMenu() {
 	//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
-	add_menu_page( 'Link Tracking', 'Link Tracking', 'administrator', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), plugin_dir_url( FILE ) . "data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9JzMwMHB4JyB3aWR0aD0nMzAwcHgnICBmaWxsPSIjMDAwMDAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgeD0iMHB4IiB5PSIwcHgiPjxwYXRoIGQ9Ik0zOCw0NUgyNmExLDEsMCwwLDAtMSwxdjRhMSwxLDAsMCwwLDEsMUgzOGExLDEsMCwwLDAsMS0xVjQ2QTEsMSwwLDAsMCwzOCw0NVptLTEsNEgyN1Y0N0gzN1oiPjwvcGF0aD48cGF0aCBkPSJNMzIsMzlBMTEsMTEsMCwxLDAsMjEsMjgsMTEuMDEzLDExLjAxMywwLDAsMCwzMiwzOVptMC0yYTguOTczLDguOTczLDAsMCwxLTguNzY4LTExSDI1djdoMlYyNmgydjNoMlYyNmgydjdoMlYyNmgydjNoMlYyNmgxLjc2OEE4Ljk3Myw4Ljk3MywwLDAsMSwzMiwzN1ptMC0xOGE5LDksMCwwLDEsOC4wNSw1SDIzLjk1QTksOSwwLDAsMSwzMiwxOVoiPjwvcGF0aD48cGF0aCBkPSJNNi4yOTMsNi43MDcsMTkuNDI5LDE5Ljg0M0ExNC45MjksMTQuOTI5LDAsMCwwLDE3LjU1OCwyNEgxNGExLDEsMCwwLDAtMSwxVjYxYTEsMSwwLDAsMCwxLDFINTBhMSwxLDAsMCwwLDEtMVYyNWExLDEsMCwwLDAtMS0xSDQ2LjQ0MmExNC45NjEsMTQuOTYxLDAsMCwwLTIyLjYtOC41NzFMMTAuNzA3LDIuMjkzYTEsMSwwLDAsMC0xLjQxNCwwbC0zLDNBMSwxLDAsMCwwLDYuMjkzLDYuNzA3Wk0yNyw2MFY1NUgzN3Y1Wk00OSwyNlY2MEgzOVY1NGExLDEsMCwwLDAtMS0xSDI2YTEsMSwwLDAsMC0xLDF2NkgxNVYyNmgyLjE0OWExNSwxNSwwLDEsMCwyOS43LDBabS00LDJBMTMsMTMsMCwxLDEsMzIsMTUsMTMuMDE1LDEzLjAxNSwwLDAsMSw0NSwyOFpNMTAsNC40MTQsMjIuMjI5LDE2LjY0M2ExNS4yMjMsMTUuMjIzLDAsMCwwLTEuNTg2LDEuNTg2TDguNDE0LDZaIj48L3BhdGg+PHJlY3QgeD0iMjkiIHk9IjMxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIj48L3JlY3Q+PHJlY3QgeD0iMzciIHk9IjMxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIj48L3JlY3Q+PC9zdmc+", 26 );
+	add_menu_page( 'Link Tracking', 'Link Tracking', 'administrator', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), "dashicons-admin-links", 26 );
+	}
+	public function setup_attachment_metaboxes(){
+		add_meta_box('attachment_meta_box', 'Link Tracking Settings', array($this,'attachment_data_meta_box'), 'attachment', 'normal','high' );
+	}
+	public function attachment_data_meta_box($post){
+		// Add a nonce field so we can check for it later.
+		wp_nonce_field( $this->plugin_name.'_attachment_meta_box', $this->plugin_name.'_attachment_meta_box_nonce' );
+
+		echo '<div class="attachment_field_containers">';
+		echo '<ul class="'.$this->plugin_name.'_data_metabox">';
+	
+		echo '<li><label for="'.$this->plugin_name.'_enable_tracking">';
+		_e( 'Enable Tracking', $this->plugin_name.'_enable_tracking' );
+		echo '</label>';
+		$args = array (
+	        'type'      => 'select',
+				  'subtype'	  => '',
+				  'id'	  => $this->plugin_name.'_enable_tracking',
+				  'name'	  => $this->plugin_name.'_enable_tracking',
+				  'required' => '',
+				  'get_options_list' => 'get_yes_no_list',
+				  'value_type'=>'normal',
+				  'wp_data' => 'post_meta',
+				  'post_id'=> $post->ID
+						);
+
+			  // this gets the post_meta value and echos back the input
+		$this->link_tracking_render_settings_field($args);
+		echo '</li>';
+		if(get_post_meta($post->ID, $this->plugin_name.'_enable_tracking', true ) == 'yes'){
+			echo '<li><label for="'.$this->plugin_name.'_link_text">';
+			_e( 'Link Text', $this->plugin_name.'_link_text' );
+			echo '</label>';
+			$args = array (
+									'type'      => 'input',
+						'subtype'	  => 'text',
+						'id'	  => $this->plugin_name.'_link_text',
+						'name'	  => $this->plugin_name.'_link_text',
+						'required' => 'required="required"',
+						'get_options_list' => '',
+						'value_type'=>'normal',
+						'wp_data' => 'post_meta',
+						'post_id'=> $post->ID
+							);
+					// this gets the post_meta value and echos back the input
+			$this->link_tracking_render_settings_field($args);
+			echo '</li>';
+			echo '<li><label for="'.$this->plugin_name.'_target">';
+			_e( 'Target', $this->plugin_name.'_target' );
+			echo '</label>';
+			unset($args);
+	  	$args = array (
+	              'type'      => 'select',
+				  'subtype'	  => '',
+				  'id'	  => $this->plugin_name.'_target',
+				  'name'	  => $this->plugin_name.'_target',
+				  'required' => 'required="required"',
+				  'get_options_list' => 'get_target_list',
+				  'value_type'=>'normal',
+				  'wp_data' => 'post_meta',
+					'post_id'=> $post->ID
+	          );
+					// this gets the post_meta value and echos back the input
+			$this->link_tracking_render_settings_field($args);
+			echo '</li>';
+			/*echo '<li>Track Clicks and Impressions with this shortcode:</br><pre>[link_tracking link="'.$post->ID.'"][/link_tracking]</pre></li>';*/
+		}
+		
+		echo '</ul></div>';
+	
+	}
+	public function attachment_meta_box_data_updated($post_ID, $post_after, $post_before){
+		// see if url assoc with post_id exists and if enable tracking is set to true
+		$link_tracking_url = get_post_meta($post_ID, $this->plugin_name.'_url', true);
+		$enable_tracking = get_post_meta($post_ID, $this->plugin_name."_enable_tracking",true);
+		$link_text = get_post_meta($post_ID, $this->plugin_name."_link_text",true);
+		$target = get_post_meta($post_ID, $this->plugin_name."_target",true);
+
+
+		// if this is the case add the link_tracking custom post type
+		$post_exists = get_page_by_title( wp_strip_all_tags($link_tracking_url), 'OBJECT', 'link_tracking_Links' );
+		if($link_tracking_url && $enable_tracking && !$post_exists){
+			$my_post = array(
+				'post_title'    => wp_strip_all_tags( $link_tracking_url ),
+				'post_content'  => '',
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_type' => 'link_tracking_Links'
+			);
+			
+			// Insert the post into the database
+			$new_post_id = wp_insert_post( $my_post );
+
+			update_post_meta($new_post_id, $this->plugin_name.'_url',$url);	
+			update_post_meta($new_post_id, $this->plugin_name.'_link_text',$link_text);
+			update_post_meta($new_post_id, $this->plugin_name.'_target',$target);
+			update_post_meta($new_post_id, $this->plugin_name.'_enable_tracking',$enable_tracking);	
+
+
+		} elseif($link_tracking_url && $enable_tracking && $post_exists){
+			// update the link tracking custom post type
+			update_post_meta($new_post_id, $this->plugin_name.'_url',$url);	
+			update_post_meta($new_post_id, $this->plugin_name.'_link_text',$link_text);
+			update_post_meta($new_post_id, $this->plugin_name.'_target',$target);
+			update_post_meta($new_post_id, $this->plugin_name.'_enable_tracking',$enable_tracking);	
+		}
 	}
 	public function setupCustomPostTypeMetaboxes(){
 		add_meta_box('link_tracking_links_data_meta_box', 'Meta Box Data', array($this,'link_tracking_links_data_meta_box'), 'link_tracking_links', 'normal','high' );
@@ -175,7 +285,7 @@ public function addPluginAdminMenu() {
 						'post_id'=> $post->ID
 							);
 					// this gets the post_meta value and echos back the input
-			$this->plugin_name_render_settings_field($args);
+			$this->link_tracking_render_settings_field($args);
 			echo '</li>';
 			echo '<li><label for="'.$this->plugin_name.'_link_text">';
 			_e( 'Link Text', $this->plugin_name.'_link_text' );
@@ -192,7 +302,7 @@ public function addPluginAdminMenu() {
 						'post_id'=> $post->ID
 							);
 					// this gets the post_meta value and echos back the input
-			$this->plugin_name_render_settings_field($args);
+			$this->link_tracking_render_settings_field($args);
 			echo '</li>';
 			echo '<li><label for="'.$this->plugin_name.'_target">';
 			_e( 'Target', $this->plugin_name.'_target' );
@@ -203,14 +313,14 @@ public function addPluginAdminMenu() {
 				  'subtype'	  => '',
 				  'id'	  => $this->plugin_name.'_target',
 				  'name'	  => $this->plugin_name.'_target',
-				  'required' => '',
+				  'required' => 'required="required"',
 				  'get_options_list' => 'get_target_list',
 				  'value_type'=>'normal',
 				  'wp_data' => 'post_meta',
 					'post_id'=> $post->ID
 	          );
 					// this gets the post_meta value and echos back the input
-			$this->plugin_name_render_settings_field($args);
+			$this->link_tracking_render_settings_field($args);
 			echo '</li>';
 			echo '<li><label for="'.$this->plugin_name.'_clicks">';
 			_e( 'Clicks', $this->plugin_name.'_clicks' );
@@ -220,14 +330,14 @@ public function addPluginAdminMenu() {
 						'subtype'	  => 'number',
 						'id'	  => $this->plugin_name.'_clicks',
 						'name'	  => $this->plugin_name.'_clicks',
-						'required' => '',
+						'disabled' => 'true',
 						'get_options_list' => '',
 						'value_type'=>'normal',
 						'wp_data' => 'post_meta',
 						'post_id'=> $post->ID
 							);
 					// this gets the post_meta value and echos back the input
-			$this->plugin_name_render_settings_field($args);
+			$this->link_tracking_render_settings_field($args);
 			echo '</li><li><label for="'.$this->plugin_name.'_impressions">';
 			_e( 'Impressions', $this->plugin_name.'_impressions' );
 			echo '</label>';
@@ -237,14 +347,14 @@ public function addPluginAdminMenu() {
 						'subtype'	  => 'number',
 						'id'	  => $this->plugin_name.'_impressions',
 						'name'	  => $this->plugin_name.'_impressions',
-						'required' => '',
+						'disabled' => 'true',
 						'get_options_list' => '',
 						'value_type'=>'normal',
 						'wp_data' => 'post_meta',
 						'post_id'=> $post->ID
 							);
 			// this gets the post_meta value and echos back the input
-			$this->plugin_name_render_settings_field($args);
+			$this->link_tracking_render_settings_field($args);
 		
 			echo '</li></ul></div>';
 		
@@ -262,7 +372,54 @@ _top	Opens the linked document in the full body of the window*/
 							);
 			return $list;
 		}
-		public function plugin_name_render_settings_field($args) {
+		public function save_attachment_meta_box_data($post_id ) {
+			/*
+			 * We need to verify this came from our screen and with proper authorization,
+			 * because the save_post action can be triggered at other times.
+			 */
+		
+			// Check if our nonce is set.
+			if ( ! isset( $_POST[$this->plugin_name.'_attachment_meta_box_nonce'] ) ) {
+				return;
+			}
+	
+			// Verify that the nonce is valid.
+			if ( ! wp_verify_nonce( $_POST[$this->plugin_name.'_attachment_meta_box_nonce'], $this->plugin_name.'_attachment_meta_box' ) ) {
+				return;
+			}
+	
+			// If this is an autosave, our form has not been submitted, so we don't want to do anything.
+			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+				return;
+			}
+	
+			// Check the user's permissions.
+			if ( ! current_user_can( 'edit_post', $post_id ) ) {
+				return;
+			}
+			
+			// Make sure that it is set.
+			if ( !isset( $_POST[$this->plugin_name.'_enable_tracking']) && !isset( $_POST[$this->plugin_name.'_target'] ) &&  !isset( $_POST[$this->plugin_name.'_link_text'] )){
+				return;
+			}
+			
+			/* OK, it's safe for us to save the data now. */
+	
+			// Sanitize user input.
+			$enable_tracking = sanitize_text_field($_POST[$this->plugin_name."_enable_tracking"]);
+			$url = get_attachment_link( $post_id );
+			$link_text = sanitize_text_field( $_POST[$this->plugin_name."_link_text"]);
+			$target = sanitize_text_field( $_POST[$this->plugin_name."_target"]);
+			
+			update_post_meta($post_id, $this->plugin_name.'_url',$url);	
+			update_post_meta($post_id, $this->plugin_name.'_link_text',$link_text);
+			update_post_meta($post_id, $this->plugin_name.'_target',$target);
+			update_post_meta($post_id, $this->plugin_name.'_enable_tracking',$enable_tracking);	
+
+			// attachment_updated runs after the attachment has been updated - at which time we need to see if a link tracking link custom post type exists and create one if not
+		
+		}
+		public function link_tracking_render_settings_field($args) {
 			if($args['wp_data'] == 'option'){
 				$wp_data_value = get_option($args['name']);
 			} elseif($args['wp_data'] == 'post_meta'){
@@ -272,7 +429,7 @@ _top	Opens the linked document in the full body of the window*/
 			switch ($args['type']) {
 				case 'select':
 					// get the options list array from the get_options_list array value
-					$wp_data_list = call_user_func(array('Wpmerchant_Admin', $args['get_options_list']), $args);
+					$wp_data_list = call_user_func(array('Link_Tracking_Admin', $args['get_options_list']), $args);
 					//$wp_data_list = $this->$args['get_options_list']($args);
 					foreach($wp_data_list AS $o){
 						$value = ($args['value_type'] == 'serialized') ? serialize($o) : $o['value'];
@@ -322,7 +479,7 @@ _top	Opens the linked document in the full body of the window*/
 					break;
 			}
 		}
-		function saveCustomPostTypeMetaBoxData( $post_id ) {
+		public function saveCustomPostTypeMetaBoxData( $post_id ) {
 			/*
 			 * We need to verify this came from our screen and with proper authorization,
 			 * because the save_post action can be triggered at other times.
@@ -364,5 +521,13 @@ _top	Opens the linked document in the full body of the window*/
 			update_post_meta($post_id, $this->plugin_name.'_link_text',$link_text);	
 			update_post_meta($post_id, $this->plugin_name.'_target',$target);	
 		
+		}
+		public function get_yes_no_list(){
+			$yesNoList = array(		
+						0 => array('value'=> 'no', 'name' => 'No'),
+						1 => array('value'=> 'yes', 'name' => 'Yes'),	  
+									
+							);
+			return $yesNoList;
 		}
 }
