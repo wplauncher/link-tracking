@@ -182,7 +182,7 @@ public function addPluginAdminMenu() {
 			  // this gets the post_meta value and echos back the input
 		$this->link_tracking_render_settings_field($args);
 		echo '</li>';
-		if(get_post_meta($post->ID, $this->plugin_name.'_enable_tracking', true ) == 'yes'){
+		if(get_post_meta($post->ID, $this->plugin_name.'_enable_tracking', true )){
 			echo '<li><label for="'.$this->plugin_name.'_link_text">';
 			_e( 'Link Text', $this->plugin_name.'_link_text' );
 			echo '</label>';
@@ -218,7 +218,6 @@ public function addPluginAdminMenu() {
 					// this gets the post_meta value and echos back the input
 			$this->link_tracking_render_settings_field($args);
 			echo '</li>';
-			/*echo '<li>Track Clicks and Impressions with this shortcode:</br><pre>[link_tracking link="'.$post->ID.'"][/link_tracking]</pre></li>';*/
 		}
 		
 		echo '</ul></div>';
@@ -355,8 +354,8 @@ public function addPluginAdminMenu() {
 							);
 			// this gets the post_meta value and echos back the input
 			$this->link_tracking_render_settings_field($args);
-		
-			echo '</li></ul></div>';
+		echo '</li><li>Track Clicks and Impressions with this shortcode:</br><pre>[link_tracking link="'.$post->ID.'"][/link_tracking]</pre></li>';
+			echo '</ul></div>';
 		
 		}
 		public function get_target_list(){

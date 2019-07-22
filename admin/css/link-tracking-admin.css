@@ -7,3 +7,56 @@
 	height:20px;
 	width:20px;
 }
+
+
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+/* Admin Menu Icon - shrink the logo */
+.toplevel_page_wpmerchant .wp-menu-image img{
+	height:20px;
+	width:20px;
+}
+.wpmerchant_product_data_metabox label {
+	float: left;
+	width: 150px;
+}
+.wpmerchant_plan_data_metabox label {
+	float: left;
+	width: 150px;
+}
+.wpmerchant_plan_data_metabox_wide label {
+	float: left;
+	width: 200px;
+}
+/*Product MetaBox Container */
+.link_tracking_links_field_containers, .attachment_field_containers{ 
+	width: 100%;
+	overflow:hidden;
+}
+
+.link_tracking_links_hide{
+	display:none;
+}
+.link_tracking_links_show{
+	display:block;
+}
+.link_tracking_links_data_metabox{
+	padding: 20px;
+}
+.link_tracking_links_data_metabox li label {
+margin-right:100px;
+}
+
+.link_tracking_links_field_containers, .attachment_field_containers{
+	padding-left:10px;
+}
+#link_tracking_links_data_meta_box .inside, #attachment_data_meta_box .inside{
+	margin:0;
+	padding:0;
+}
+
+/**
+CHECKOUT PRE AND POST MODAL CSS
+**/
