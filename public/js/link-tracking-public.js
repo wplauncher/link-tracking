@@ -38,7 +38,8 @@
 			}
 		},
 		clicks:function(_that){
-			_that.bind('click',function(){
+			_that.bind('click',function(event){
+				event.preventDefault();
 					// send an ajax request that tracks the click
 					var post_id = $(this).data('postid');
 					console.log(post_id);
@@ -53,6 +54,7 @@
 							if(data.response == 'success'){
 								console.log('click tracked');
 								console.log('clicks'+data.clicks);
+								window.open($(this).attr('href'),$(this).attr('target'));
 							} else {
 								console.log('click not tracked')
 								
