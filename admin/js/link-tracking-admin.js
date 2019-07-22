@@ -31,8 +31,49 @@
 	var LinkTrackingAdmin = {
 		construct:function(){
 			$(function() {
+				// Run initButton when the media button is clicked.
+				$( '.link-tracking-media-button' ).each(function( index ) {
+					LinkTrackingAdmin.initMediaButton($(this));
+			});
 			});
 		},
+		initMediaButton:function(_that){
+			_that.click(function(e){
+		// Instantiates the variable that holds the media library frame.
+		var metaImageFrame;
+				 // Get the btn
+			var btn = e.target;
+	
+			// Check if it's the upload button
+			if ( !btn || !$( btn ).attr( 'data-media-uploader-target' ) ) return;
+	
+			// Get the field target
+			var field = $( btn ).data( 'media-uploader-target' );
+	
+			// Prevents the default action from occuring.
+			e.preventDefault();
+	
+			// Sets up the media library frame
+			metaImageFrame = wp.media.frames.metaImageFrame = wp.media({
+				title: meta_image.title,
+				button: { text:  'Use this file' },
+			});
+	
+			// Runs when an image is selected.
+			metaImageFrame.on('select', function() {
+	
+				// Grabs the attachment selection and creates a JSON representation of the model.
+				var media_attachment = metaImageFrame.state().get('selection').first().toJSON();
+	
+				// Sends the attachment URL to our custom image input field.
+				$( field ).val(media_attachment.url);
+	
+			});
+	
+			// Opens the media library frame.
+			metaImageFrame.open();
+			});
+	},
 		getQueryVariable:function(variableName) {
 			var query = window.location.search.substring(1);
 			var vars = query.split("&");
@@ -43,5 +84,5 @@
 			return(false);
 		}
 	}
-	//LinkTrackingAdmin.construct();
+	LinkTrackingAdmin.construct();
 })( jQuery );

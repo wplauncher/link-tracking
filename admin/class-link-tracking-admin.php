@@ -298,7 +298,7 @@ public function addPluginAdminMenu() {
 		}
 	}
 	public function setupCustomPostTypeMetaboxes(){
-		add_meta_box('link_tracking_links_data_meta_box', 'Meta Box Data', array($this,'link_tracking_links_data_meta_box'), 'link_tracking_links', 'normal','high' );
+		add_meta_box('link_tracking_links_data_meta_box', 'Link Tracking Data', array($this,'link_tracking_links_data_meta_box'), 'link_tracking_links', 'normal','high' );
 		}
 	public function link_tracking_links_data_meta_box($post){
 			// Add a nonce field so we can check for it later.
