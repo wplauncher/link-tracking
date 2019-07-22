@@ -45,6 +45,7 @@
 					console.log(post_id);
 					var dataString = "action=link_tracking_clicks&post_id="+encodeURIComponent(post_id)+"&security="+encodeURIComponent(link_tracking_ajax_object.click_nonce);
 					console.log(link_tracking_ajax_object);
+					var _this = $(this);
 					$.ajax({
 						url: link_tracking_ajax_object.ajax_url,  
 						type: "POST",
@@ -54,7 +55,7 @@
 							if(data.response == 'success'){
 								console.log('click tracked');
 								console.log('clicks'+data.clicks);
-								window.open($(this).attr('href'),$(this).attr('target'));
+								window.open(_this.attr('href'),_this.attr('target'));
 							} else {
 								console.log('click not tracked')
 								
