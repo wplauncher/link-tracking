@@ -60,6 +60,9 @@ class Link_Tracking_Admin {
 		add_action('add_meta_boxes_attachment', array( $this, 'setup_attachment_metaboxes' ));
 		add_action( 'edit_attachment', array( $this, 'save_attachment_meta_box_data') );
 		add_action( 'attachment_updated', array( $this, 'attachment_meta_box_data_updated') );
+
+		// this fills in the columns that were created with each individual post's value
+		add_action( 'manage_link_tracking_links_posts_custom_column' , array($this,'fill_link_tracking_links_columns'), 10, 2 );
 	}
 
 	/**
@@ -148,8 +151,22 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 	$link_text = get_post_meta($a['link'], $this->plugin_name.'_link_text', true );
 	$target = get_post_meta($a['link'], $this->plugin_name.'_target', true );
 
-	return '<a class="link_tracking_link '.esc_attr($a['classes']).'" data-postId="'.esc_attr($a['link']).'" target="'.esc_attr($target).'" href="'.esc_attr($href).'" style="'.esc_attr($a['style']).'">'.$link_text.'</a>';
+	return '<a class="link_tracking_link '.esc_attr($a['classes']).'" data-postid="'.esc_attr($a['link']).'" target="'.esc_attr($target).'" href="'.esc_attr($href).'" style="'.esc_attr($a['style']).'">'.$link_text.'</a>';
 	}
+	public function fill_link_tracking_links_columns( $column, $post_id ) {
+		// Fill in the columns with meta box info associated with each post
+	switch ( $column ) {
+	case 'clicks' :
+		echo get_post_meta( $post_id , $this->plugin_name.'_clicks' , true ); 
+		break;
+	case 'impressions' :
+			echo get_post_meta( $post_id , $this->plugin_name.'_impressions' , true ); 
+			break;
+	case 'link_id' :
+			echo $post_id; 
+			break;
+		}
+}
 public function addPluginAdminMenu() {
 	//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
 	add_menu_page( 'Link Tracking', 'Link Tracking', 'administrator', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), "dashicons-admin-links", 26 );
@@ -182,7 +199,7 @@ public function addPluginAdminMenu() {
 			  // this gets the post_meta value and echos back the input
 		$this->link_tracking_render_settings_field($args);
 		echo '</li>';
-		if(get_post_meta($post->ID, $this->plugin_name.'_enable_tracking', true )){
+		if(get_post_meta($post->ID, $this->plugin_name.'_enable_tracking', true ) == 'yes'){
 			echo '<li><label for="'.$this->plugin_name.'_link_text">';
 			_e( 'Link Text', $this->plugin_name.'_link_text' );
 			echo '</label>';

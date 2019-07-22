@@ -40,7 +40,7 @@
 		clicks:function(_that){
 			_that.bind('click',function(){
 					// send an ajax request that tracks the click
-					var post_id = $(this).data('postId');
+					var post_id = $(this).data('postid');
 					console.log(post_id);
 					var dataString = "action=link_tracking_clicks&post_id="+encodeURIComponent(post_id)+"&security="+encodeURIComponent(link_tracking_ajax_object.click_nonce);
 					console.log(link_tracking_ajax_object);
@@ -68,7 +68,7 @@
 		},
 		impressions:function(_that){
 			// send an ajax request that tracks the impression
-			var post_id = _that.data('postId');
+			var post_id = _that.data('postid');
 					console.log(post_id);
 					var dataString = "action=link_tracking_impressions&post_id="+encodeURIComponent(post_id)+"&security="+encodeURIComponent(link_tracking_ajax_object.impression_nonce);
 					console.log(link_tracking_ajax_object);

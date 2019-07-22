@@ -45,10 +45,10 @@
 .link_tracking_links_data_metabox{
 	padding: 20px;
 }
-.link_tracking_links_data_metabox li label {
-margin-right:100px;
+ul.link_tracking_links_data_metabox label {
+	width: 150px;
+	float: left;
 }
-
 .link_tracking_links_field_containers, .attachment_field_containers{
 	padding-left:10px;
 }

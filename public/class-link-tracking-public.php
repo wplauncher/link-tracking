@@ -119,7 +119,7 @@ class Link_Tracking_Public {
 		
 		//if(!current_user_can( 'administrator' ) || $payment_processor_nonce != $nonce){
 		//wp_set_current_user( $user_id );
-		if(!wp_verify_nonce($nonce,'link_tracking_clicks')){
+		if(!wp_verify_nonce($nonce,'link_tracking_click')){
 			$data['response'] = 'error'.__LINE__;
 			$data['vars'] = $_POST;
 			// Set content type
@@ -161,7 +161,7 @@ class Link_Tracking_Public {
 		
 		//if(!current_user_can( 'administrator' ) || $payment_processor_nonce != $nonce){
 		//wp_set_current_user( $user_id );
-		if(!wp_verify_nonce($nonce,'link_tracking_impressions')){
+		if(!wp_verify_nonce($nonce,'link_tracking_impression')){
 			$data['response'] = 'error'.__LINE__;
 			$data['vars'] = $_POST;
 			// Set content type
