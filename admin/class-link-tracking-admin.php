@@ -61,6 +61,9 @@ class Link_Tracking_Admin {
 		add_action( 'edit_attachment', array( $this, 'save_attachment_meta_box_data') );
 		add_action( 'attachment_updated', array( $this, 'attachment_meta_box_data_updated') );
 
+		// UPdate the columns shown on hte products edit.php file - so we also have cost, inventory and product id
+		add_filter('manage_link_tracking_links_posts_columns' , array($this,'link_tracking_links_columns'));
+
 		// this fills in the columns that were created with each individual post's value
 		add_action( 'manage_link_tracking_links_posts_custom_column' , array($this,'fill_link_tracking_links_columns'), 10, 2 );
 	}
@@ -153,6 +156,24 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 
 	return '<a class="link_tracking_link '.esc_attr($a['classes']).'" data-postid="'.esc_attr($a['link']).'" target="'.esc_attr($target).'" href="'.esc_attr($href).'" style="'.esc_attr($a['style']).'">'.$link_text.'</a>';
 	}
+	public function link_tracking_links_columns($columns){
+			// Remove Author and Comments from Columns and Add Cost, Inventory and Product Id
+			unset(
+				$columns['wpseo-score'],
+				$columns['wpseo-title'],
+				$columns['wpseo-metadesc'],
+				$columns['wpseo-focuskw']
+			);
+			return array(
+							 'cb' => '<input type="checkbox" />',
+							 'title' => __('Title'),
+							 'clicks' => __('Clicks'),
+							 'impressions' => __('Impressions'),
+							 'link_id' =>__( 'Link ID'),
+					 'date' =>__( 'Date')
+					 );
+				//return $columns;
+		}
 	public function fill_link_tracking_links_columns( $column, $post_id ) {
 		// Fill in the columns with meta box info associated with each post
 	switch ( $column ) {
