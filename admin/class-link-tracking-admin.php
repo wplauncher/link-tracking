@@ -306,13 +306,14 @@ public function addPluginAdminMenu() {
 	
 			echo '<div class="link_tracking_links_field_containers">';
 			echo '<ul class="link_tracking_links_data_metabox">';
-		
+			
 			echo '<li><label for="'.$this->plugin_name.'_url">';
-			_e( 'URL', $this->plugin_name.'_url' );
+			_e( 'Link', $this->plugin_name.'_url' );
 			echo '</label>';
+			echo '<button class="button link-tracking-media-button">Upload File</button>';
 			$args = array (
 									'type'      => 'input',
-						'subtype'	  => 'url',
+						'subtype'	  => 'hidden',
 						'id'	  => $this->plugin_name.'_url',
 						'name'	  => $this->plugin_name.'_url',
 						'required' => 'required="required"',

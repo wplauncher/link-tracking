@@ -45,10 +45,10 @@
 			var btn = e.target;
 	
 			// Check if it's the upload button
-			if ( !btn || !$( btn ).attr( 'data-media-uploader-target' ) ) return;
+			if ( !btn || !$( 'input[name="link-tracking_url"]' ) ) return;
 	
 			// Get the field target
-			var field = $( btn ).data( 'media-uploader-target' );
+			var field = $( 'input[name="link-tracking_url"]' );
 	
 			// Prevents the default action from occuring.
 			e.preventDefault();
