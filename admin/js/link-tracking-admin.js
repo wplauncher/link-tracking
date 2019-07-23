@@ -55,7 +55,7 @@
 	
 			// Sets up the media library frame
 			metaImageFrame = wp.media.frames.metaImageFrame = wp.media({
-				title: meta_image.title,
+				title: { title: 'Choose or Upload Media'},
 				button: { text:  'Use this file' },
 			});
 	

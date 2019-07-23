@@ -97,7 +97,7 @@ class Link_Tracking_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
+		global $typenow;
 		/**
 		 * This function is provided for demonstration purposes only.
 		 *
@@ -111,6 +111,10 @@ class Link_Tracking_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/link-tracking-admin.js', array( 'jquery' ), $this->version, false );
+		
+		if( $typenow == 'link_tracking_links' ) {
+			wp_enqueue_media();
+		}
 
 	}
 //STEP 2: Create the Register Custom Post Types Method
