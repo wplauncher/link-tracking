@@ -56,6 +56,12 @@ ul.link_tracking_links_data_metabox label {
 	margin:0;
 	padding:0;
 }
+.link-tracking-links_code {
+	margin-top: 30px;
+	padding: 30px;
+	background: transparent;
+	font-weight: bolder;
+}
 
 /**
 CHECKOUT PRE AND POST MODAL CSS

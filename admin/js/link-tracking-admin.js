@@ -49,7 +49,7 @@
 	
 			// Get the field target
 			var field = $( 'input[name="link-tracking_url"]' );
-	
+			var file_name_container =  $('.link-tracking_media_file')
 			// Prevents the default action from occuring.
 			e.preventDefault();
 	
@@ -67,6 +67,7 @@
 	
 				// Sends the attachment URL to our custom image input field.
 				$( field ).val(media_attachment.url);
+				$( file_name_container ).text(media_attachment.url);
 	
 			});
 	
