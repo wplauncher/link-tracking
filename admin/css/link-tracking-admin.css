@@ -65,6 +65,10 @@ ul.link_tracking_links_data_metabox label {
 .link-tracking_media_file {
 	padding-left: 10px;
 }
+#link_tracking_columnchart_material{
+	width:800px;
+	height:500px;
+}
 /**
 CHECKOUT PRE AND POST MODAL CSS
 **/

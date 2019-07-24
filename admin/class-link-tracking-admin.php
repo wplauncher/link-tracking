@@ -106,9 +106,9 @@ class Link_Tracking_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/link-tracking-admin.js', array( 'jquery' ), $this->version, false );
-		
 		if( $typenow == 'link_tracking_links' ) {
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/link-tracking-admin.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name.'google-charts', 'https://www.gstatic.com/charts/loader.js', array(), $this->version, false );
 			wp_enqueue_media();
 		}
 
@@ -202,11 +202,60 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			echo '</ul></div>';
 		
 		}
+		public function get_historical_tracking($data){
+			$Link_Tracking_Public = new Link_Tracking_Public($this->plugin_name, $this->version);
+			$first_last_data = $Link_Tracking_Public->get_last_5_weeks();
+			$weekly_data = array('first_week'=>$first_last_data['first_week'], 'last_week'=>$first_last_data['last_week'], 'post_id' => $data['post_id']);
+
+			$weekly_clicks = $Link_Tracking_Public->get_clicks($weekly_data);
+			$weekly_impressions = $Link_Tracking_Public->get_impressions($weekly_data);
+			return array('clicks'=>$weekly_clicks, 'impressions'=>$weekly_impressions);
+		}
 	public function link_tracking_links_data_meta_box($post){
 			// Add a nonce field so we can check for it later.
 			wp_nonce_field( $this->plugin_name.'_meta_box', $this->plugin_name.'_links_meta_box_nonce' );
 	
 			echo '<div class="link_tracking_links_field_containers">';
+			//show clicks/impressions by week #
+			$data = array('post_id'=>$post->ID);
+			$historical_tracking = $this->get_historical_tracking($data);
+			foreach($historical_tracking['clicks'] AS $key=>$value){
+				$weekly_data[$key] = "['".date('m-d-Y',strtotime($value->week))."', '".$value->clicks."', ";
+			}
+			$item_total = count($historical_tracking['impressions'])-1;
+			foreach($historical_tracking['impressions'] AS $key=>$value){
+				$weekly_data[$key] = "'".$value->impressions."']";
+				if($item_total != $key){
+					$weekly_data[$key] = ",";
+				}
+			}
+			$weekly_string = implode(',',$weekly_data);
+			echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+					['Week of', 'Clicks', 'Impressions'],".$weekly_string.
+					"
+        ]);
+
+        var options = {
+          chart: {
+            title: 'Link Tracking',
+            subtitle: 'Clicks and Impressions by Week',
+					}
+					bars: 'vertical',
+          vAxis: {format: 'decimal'},
+          height: 400,
+          colors: ['#4d6dc3', '#8097d4']
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    </script></div>";
 			echo '<ul class="link_tracking_links_data_metabox">';
 			
 			echo '<li><label for="'.$this->plugin_name.'_url">';
@@ -263,7 +312,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			$this->link_tracking_render_settings_field($args);
 			echo '</li>';
 			echo '<li><label for="'.$this->plugin_name.'_clicks">';
-			_e( 'Clicks', $this->plugin_name.'_clicks' );
+			_e( 'Total Clicks', $this->plugin_name.'_clicks' );
 			echo '</label>';
 			$args = array (
 									'type'      => 'input',
@@ -279,7 +328,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 					// this gets the post_meta value and echos back the input
 			$this->link_tracking_render_settings_field($args);
 			echo '</li><li><label for="'.$this->plugin_name.'_impressions">';
-			_e( 'Impressions', $this->plugin_name.'_impressions' );
+			_e( 'Total Impressions', $this->plugin_name.'_impressions' );
 			echo '</label>';
 			unset($args);
 				$args = array (

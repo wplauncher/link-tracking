@@ -143,6 +143,9 @@ class Link_Tracking_Public {
 		} else {
 			$clicks = '';
 		}
+		$existingData = array('post_id' => $post_id);
+		$clicks_table = $this->update_clicks($existingData);
+
 		$data['response'] = 'success';
 		$data['clicks'] = $clicks;
 		// Set content type
@@ -153,6 +156,131 @@ class Link_Tracking_Public {
 		echo json_encode($data);
 		/* close connection */
 		exit();	
+	}
+	public function get_last_5_weeks(){
+		$start = strtotime('4 mondays ago');
+		$end = strtotime('monday this week');
+		$data['first_week'] = date('Y-m-d H:i:s', $start);
+		$data['last_week'] = date('Y-m-d H:i:s', $end);
+		return $data;
+	}
+	public function get_current_week(){
+		$time = strtotime('monday this week');
+		$current_week = date('Y-m-d', $time);
+		return $current_week;
+	}
+	/**
+	 * Params - first_week, last_week, post_id
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_clicks($data){
+		global $wpdb;
+		// Get the wpmerchant db version to make sure the functions below are= compatible with the db version
+    	$plugin_name_db_version = get_option( $this->plugin_name.'_db_version' );
+		$table_name = $wpdb->prefix . 'link_tracking_clicks';
+		// Make sure the select statement is compatible with the db version		
+		$post_id = $data['post_id'];
+		if(!isset($data['first_week'])){
+			$week = $this->get_current_week();
+			$clicks = $wpdb->get_row("SELECT * FROM $table_name WHERE post_id = '$post_id' and week LIKE '%$week%'");
+		} else {
+			$first_week = $data['first_week'];
+			$last_week = $data['last_week'];
+			$clicks = $wpdb->get_row("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
+		}
+		
+		return $clicks;
+	}
+	public function update_clicks($existingData){
+		global $wpdb;
+		// Get the wpmerchant db version to make sure the functions below are= compatible with the db version
+    	$plugin_name_db_version = get_option( $this->plugin_name.'_db_version' );
+		$table_name = $wpdb->prefix . 'link_tracking_clicks';
+		$clicks = $this->get_clicks($existingData);
+		if(isset($clicks)){
+			// insert into clicks record
+			$post_id = $clicks->post_id;
+			$week = $clicks->week;
+			$where = array( 'post_id' => $post_id, 'week' => $week);
+			// Make sure the insert statement is compatible with the db version		
+			$sql = $wpdb->update( 
+				$table_name, 
+				array( 
+					'clicks' => $clicks->clicks+1
+				),
+				$where
+			);
+		} else {
+			// add clicks record
+			$week = $this->get_current_week();
+			$sql = $wpdb->insert( 
+				$table_name, 
+				array( 
+					'clicks' => 1,
+					'post_id' => $existingData['post_id'],
+					'week' => $week,
+				)
+			);
+		}
+		
+		return $sql;
+	}
+	/**
+	 * Params - first_week, last_week, post_id
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_impressions($data){
+		global $wpdb;
+		// Get the wpmerchant db version to make sure the functions below are= compatible with the db version
+    	$plugin_name_db_version = get_option( $this->plugin_name.'_db_version' );
+		$table_name = $wpdb->prefix . 'link_tracking_impressions';
+		// Make sure the select statement is compatible with the db version		
+		$post_id = $data['post_id'];
+		if(!isset($data['first_week'])){
+			$week = $this->get_current_week();
+			$impressions = $wpdb->get_row("SELECT * FROM $table_name WHERE post_id = '$post_id' and week LIKE '%$week%'");
+		} else {
+			$first_week = $data['first_week'];
+			$last_week = $data['last_week'];
+			$impressions = $wpdb->get_row("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
+		}
+		return $impressions;
+	}
+	public function update_impressions($existingData){
+		global $wpdb;
+		// Get the wpmerchant db version to make sure the functions below are= compatible with the db version
+    	$plugin_name_db_version = get_option( $this->plugin_name.'_db_version' );
+		$table_name = $wpdb->prefix . 'link_tracking_impressions';
+		$impressions = $this->get_clicks($existingData);
+		if(isset($impressions)){
+			// insert into clicks record
+			$post_id = $impressions->post_id;
+			$week = $impressions->week;
+			$where = array( 'post_id' => $post_id, 'week' => $week);
+			// Make sure the insert statement is compatible with the db version		
+			$sql = $wpdb->update( 
+				$table_name, 
+				array( 
+					'impressions' => $impressions->impressions+1
+				),
+				$where
+			);
+		} else {
+			// add clicks record
+			$week = $this->get_current_week();
+			$sql = $wpdb->insert( 
+				$table_name, 
+				array( 
+					'impressions' => 1,
+					'post_id' => $existingData['post_id'],
+					'week' => $week,
+				)
+			);
+		}
+		
+		return $sql;
 	}
 	public function track_impressions(){		
 		$nonce = sanitize_text_field($_REQUEST['security']);
@@ -185,6 +313,10 @@ class Link_Tracking_Public {
 		} else {
 			$impressions = '';
 		}
+		// update impression count for the week
+		$existingData = array('post_id' => $post_id);
+		$impression_table = $this->update_impressions($existingData);
+
 		$data['response'] = 'success';
 		$data['impressions'] = $impressions;
 		// Set content type
