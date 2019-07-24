@@ -62,7 +62,9 @@ ul.link_tracking_links_data_metabox label {
 	background: transparent;
 	font-weight: bolder;
 }
-
+.link-tracking_media_file {
+	padding-left: 10px;
+}
 /**
 CHECKOUT PRE AND POST MODAL CSS
 **/

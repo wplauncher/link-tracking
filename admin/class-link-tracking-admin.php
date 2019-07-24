@@ -53,7 +53,6 @@ class Link_Tracking_Admin {
 		$this->version = $version;
 
 		add_action('init', array( $this, 'register_custom_post_types' ));
-		add_action('admin_menu', array( $this, 'addPluginAdminMenu' ), 9);
 		add_action('add_meta_boxes_link_tracking_links', array( $this, 'setupCustomPostTypeMetaboxes' ));
 		add_action( 'save_post_link_tracking_links', array( $this, 'saveCustomPostTypeMetaBoxData') );
 		add_shortcode( 'link_tracking', array( $this, 'linkTrackingShortcode' ));
@@ -135,7 +134,8 @@ public function register_custom_post_types(){
 			'description'=>'A Link you can track', 
 			'exclude_from_search'=>true,
 			'show_ui'=>true,
-			'show_in_menu'=>$this->plugin_name,
+			'menu_position'=>26,
+			'menu_icon'=>"dashicons-admin-links",
 			'supports'=>array('title', 'custom_fields'),
 			'taxonomies'=>array('category','post_tag'));
  
@@ -189,10 +189,6 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			break;
 		}
 }
-public function addPluginAdminMenu() {
-	//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
-	add_menu_page( 'Link Tracking', 'Link Tracking', 'administrator', $this->plugin_name, array( $this, 'display_plugin_admin_dashboard' ), "dashicons-admin-links", 26 );
-	}
 	public function setupCustomPostTypeMetaboxes(){
 		add_meta_box('link_tracking_links_data_meta_box', 'Link Tracking Data', array($this,'link_tracking_links_data_meta_box'), 'link_tracking_links', 'normal','high' );
 		add_meta_box('link_tracking_links_shortcode_meta_box', 'Link Tracking Shortcode', array($this,'link_tracking_links_shortcode_meta_box'), 'link_tracking_links', 'normal','high' );
@@ -212,11 +208,10 @@ public function addPluginAdminMenu() {
 			echo '<div class="link_tracking_links_field_containers">';
 			echo '<ul class="link_tracking_links_data_metabox">';
 			
-			echo '<li><label>&nbsp;</label><span class="link-tracking_media_file"></span></li>';
 			echo '<li><label for="'.$this->plugin_name.'_url">';
 			_e( 'Link', $this->plugin_name.'_url' );
 			echo '</label>';
-			echo '<button class="button link-tracking-media-button">Upload File</button>';
+			echo '<button class="button link-tracking-media-button">Upload File</button><span class="link-tracking_media_file"></span>';
 			$args = array (
 									'type'      => 'input',
 						'subtype'	  => 'hidden',
