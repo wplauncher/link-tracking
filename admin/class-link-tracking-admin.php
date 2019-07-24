@@ -128,7 +128,9 @@ public function register_custom_post_types(){
 					'view_item'=>'View Link',
 					'search_items'=>'Search Link',
 					'not_found'=>'No Links Found',
-					'not_found_in_trash'=>'No Links Found in Trash'
+					'not_found_in_trash'=>'No Links Found in Trash',
+					'menu_name' => 'Link Tracking',
+					'name_admin_bar'     => 'Link Tracking',
 				),
 			'public'=>false,
 			'description'=>'A Link you can track', 
@@ -136,8 +138,7 @@ public function register_custom_post_types(){
 			'show_ui'=>true,
 			'menu_position'=>26,
 			'menu_icon'=>"dashicons-admin-links",
-			'supports'=>array('title', 'custom_fields'),
-			'taxonomies'=>array('category','post_tag'));
+			'supports'=>array('title', 'custom_fields'));
  
 	// Post type, $args - the Post Type string can be MAX 20 characters
 	register_post_type( 'link_tracking_links', $LinkArgs );
@@ -294,7 +295,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 							);
 			// this gets the post_meta value and echos back the input
 			$this->link_tracking_render_settings_field($args);
-		echo '</li><li>Track Clicks and Impressions with this shortcode:</br><pre>[link_tracking link="'.$post->ID.'"][/link_tracking]</pre></li>';
+		echo '</li>';
 			echo '</ul></div>';
 		
 		}
