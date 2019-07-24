@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Link Tracking
  * Plugin URI:        https://www.wplauncher.com
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Easy link tracking to see the impressions and clicks on any link on your site.
  * Version:           1.0.0
  * Author:            Ben Shadle
  * Author URI:        https://www.wplauncher.com
