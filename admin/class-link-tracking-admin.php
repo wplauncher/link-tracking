@@ -210,6 +210,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			return $data;
 		}
 		public function get_historical_tracking($data){
+			require(plugin_dir_path( dirname(__FILE__) ) . 'public/class-link-tracking-public.php');
 			$Link_Tracking_Public = new Link_Tracking_Public($this->plugin_name, $this->version);
 			$first_last_data = $this->get_last_5_weeks();
 			$weekly_data = array('first_week'=>$first_last_data['first_week'], 'last_week'=>$first_last_data['last_week'], 'post_id' => $data['post_id']);
