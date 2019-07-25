@@ -342,8 +342,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 
 					var options = {
 						chart: {
-							title: 'Link Tracking',
-							subtitle: 'Clicks and Impressions by Week',
+							title: 'Clicks and Impressions by Week'
 						},
 						bars: 'vertical',
 						bar: {groupWidth: '95%'},
