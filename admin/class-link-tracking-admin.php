@@ -219,13 +219,11 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			//show clicks/impressions by week #
 			$data = array('post_id'=>$post->ID);
 			$historical_tracking = $this->get_historical_tracking($data);
-			foreach($historical_tracking['clicks'] AS $key=>$value){
-				$weekly_data[$key] = "['".date('m-d-Y',strtotime($value->week))."', '".$value->clicks."', ";
-			}
 			$item_total = count($historical_tracking['impressions'])-1;
-			foreach($historical_tracking['impressions'] AS $key=>$value){
-				$weekly_data[$key] = $weekly_data[$key]."'".$value->impressions."']";
+			foreach($historical_tracking['clicks'] AS $key=>$value){
+				$weekly_data[$key] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', '".$historical_tracking['clicks'][$key]->clicks."', '".$historical_tracking['impressions'][$key]->impressions."']";
 			}
+			
 			$weekly_string = implode(',',$weekly_data);
 			if($weekly_string){
 					echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
