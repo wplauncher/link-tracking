@@ -207,6 +207,7 @@ class Link_Tracking_Public {
 				$table_name, 
 				array( 
 					'clicks' => $clicks->clicks+1,
+					'week' => $week
 				),
 				$where
 			);
@@ -263,7 +264,8 @@ class Link_Tracking_Public {
 			$sql = $wpdb->update( 
 				$table_name, 
 				array( 
-					'impressions' => $impressions->impressions+1
+					'impressions' => $impressions->impressions+1,
+					'week' => $week
 				),
 				$where
 			);
