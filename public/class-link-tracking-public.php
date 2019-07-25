@@ -158,13 +158,13 @@ class Link_Tracking_Public {
 		exit();	
 	}
 	public function get_current_week(){
-		$time = strtotime('monday this week');
+		$time = strtotime('last monday');
 		$current_week = date('Y-m-d', $time);
 		
 		return $current_week;
 	}
 	public function get_current_week_full(){
-		$time = strtotime('monday this week');
+		$time = strtotime('last monday');
 		$current_week = date('Y-m-d H:i:s', $time);
 		return $current_week;
 	}
@@ -212,7 +212,7 @@ class Link_Tracking_Public {
 			);
 		} else {
 			// add clicks record
-			$week = $this->get_current_week_full();
+			$week = $this->get_current_week();
 			$sql = $wpdb->insert( 
 				$table_name, 
 				array( 
@@ -245,6 +245,7 @@ class Link_Tracking_Public {
 			$last_week = $data['last_week'];
 			$impressions = $wpdb->get_results("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
 		}
+		
 		return $impressions;
 	}
 	public function update_impressions($existingData){
@@ -268,7 +269,7 @@ class Link_Tracking_Public {
 			);
 		} else {
 			// add clicks record
-			$week = $this->get_current_week_full();
+			$week = $this->get_current_week();
 			$sql = $wpdb->insert( 
 				$table_name, 
 				array( 
