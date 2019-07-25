@@ -200,13 +200,13 @@ class Link_Tracking_Public {
 		if(isset($clicks)){
 			// insert into clicks record
 			$post_id = $clicks->post_id;
-			$week = $clicks->week;
+			$week = $this->get_current_week();
 			$where = array( 'post_id' => $post_id, 'week' => $week);
 			// Make sure the insert statement is compatible with the db version		
 			$sql = $wpdb->update( 
 				$table_name, 
 				array( 
-					'clicks' => $clicks->clicks+1
+					'clicks' => $clicks->clicks+1,
 				),
 				$where
 			);
@@ -257,7 +257,7 @@ class Link_Tracking_Public {
 		if(isset($impressions)){
 			// insert into clicks record
 			$post_id = $impressions->post_id;
-			$week = $impressions->week;
+			$week = $this->get_current_week();
 			$where = array( 'post_id' => $post_id, 'week' => $week);
 			// Make sure the insert statement is compatible with the db version		
 			$sql = $wpdb->update( 
@@ -313,9 +313,8 @@ class Link_Tracking_Public {
 		} else {
 			$impressions = '';
 		}
-		// update impression count for the week
 		$existingData = array('post_id' => $post_id);
-		$impression_table = $this->update_impressions($existingData);
+		$impressions_table = $this->update_impressions($existingData);
 
 		$data['response'] = 'success';
 		$data['impressions'] = $impressions;
