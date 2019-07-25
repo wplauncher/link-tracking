@@ -162,6 +162,11 @@ class Link_Tracking_Public {
 		$current_week = date('Y-m-d', $time);
 		return $current_week;
 	}
+	public function get_current_week_full(){
+		$time = strtotime('monday this week');
+		$current_week = date('Y-m-d H:i:s', $time);
+		return $current_week;
+	}
 	/**
 	 * Params - first_week, last_week, post_id
 	 *
@@ -206,7 +211,7 @@ class Link_Tracking_Public {
 			);
 		} else {
 			// add clicks record
-			$week = $this->get_current_week();
+			$week = $this->get_current_week_full();
 			$sql = $wpdb->insert( 
 				$table_name, 
 				array( 
@@ -246,7 +251,7 @@ class Link_Tracking_Public {
 		// Get the wpmerchant db version to make sure the functions below are= compatible with the db version
     	$plugin_name_db_version = get_option( $this->plugin_name.'_db_version' );
 		$table_name = $wpdb->prefix . 'link_tracking_impressions';
-		$impressions = $this->get_clicks($existingData);
+		$impressions = $this->get_impressions($existingData);
 		if(isset($impressions)){
 			// insert into clicks record
 			$post_id = $impressions->post_id;
@@ -262,7 +267,7 @@ class Link_Tracking_Public {
 			);
 		} else {
 			// add clicks record
-			$week = $this->get_current_week();
+			$week = $this->get_current_week_full();
 			$sql = $wpdb->insert( 
 				$table_name, 
 				array( 
