@@ -227,41 +227,42 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 				$weekly_data[$key] = $weekly_data[$key]."'".$value->impressions."']";
 			}
 			$weekly_string = implode(',',$weekly_data);
-			echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
-      google.charts.load('current', {'packages':['bar']});
-      google.charts.setOnLoadCallback(drawChart);
+			if($weekly_string){
+					echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
+					google.charts.load('current', {'packages':['bar']});
+					google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-					['Week of', 'Clicks', 'Impressions'],".$weekly_string.
-					"
-        ]);
+					function drawChart() {
+						var data = google.visualization.arrayToDataTable([
+							['Week of', 'Clicks', 'Impressions'],".$weekly_string."
+						]);
 
-        var options = {
-          chart: {
-            title: 'Link Tracking',
-            subtitle: 'Clicks and Impressions by Week',
+						var options = {
+							chart: {
+								title: 'Link Tracking',
+								subtitle: 'Clicks and Impressions by Week',
+							},
+							bars: 'vertical',
+							vAxis: {format: 'decimal'},
+							height: 400,
+							colors: ['#4d6dc3', '#8097d4']
+						};
+
+						var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+						chart.draw(data, google.charts.Bar.convertOptions(options));
 					}
-					bars: 'vertical',
-          vAxis: {format: 'decimal'},
-          height: 400,
-          colors: ['#4d6dc3', '#8097d4']
-        };
-
-        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
-
-        chart.draw(data, google.charts.Bar.convertOptions(options));
-      }
-    </script></div>";
+				</script></div>";
+			}
 			echo '<ul class="link_tracking_links_data_metabox">';
 			
 			echo '<li><label for="'.$this->plugin_name.'_url">';
 			_e( 'Link', $this->plugin_name.'_url' );
 			echo '</label>';
-			echo '<button class="button link-tracking-media-button">Upload File</button><span class="link-tracking_media_file"></span>';
+			echo '<button class="button link-tracking-media-button">Upload File</button>';
 			$args = array (
 									'type'      => 'input',
-						'subtype'	  => 'hidden',
+						'subtype'	  => 'text',
 						'id'	  => $this->plugin_name.'_url',
 						'name'	  => $this->plugin_name.'_url',
 						'required' => 'required="required"',
