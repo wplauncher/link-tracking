@@ -224,10 +224,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			}
 			$item_total = count($historical_tracking['impressions'])-1;
 			foreach($historical_tracking['impressions'] AS $key=>$value){
-				$weekly_data[$key] = "'".$value->impressions."']";
-				if($item_total != $key){
-					$weekly_data[$key] = ",";
-				}
+				$weekly_data[$key] = $weekly_data[$key]."'".$value->impressions."']";
 			}
 			$weekly_string = implode(',',$weekly_data);
 			echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
