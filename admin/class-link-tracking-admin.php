@@ -210,7 +210,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			return $data;
 		}
 		public function get_historical_tracking($data){
-			require(plugin_dir_path( dirname(__FILE__) ) . 'public/class-link-tracking-public.php');
+			/*require_once(plugin_dir_path( dirname(__FILE__) ) . 'public/class-link-tracking-public.php');*/
 			$Link_Tracking_Public = new Link_Tracking_Public($this->plugin_name, $this->version);
 			$first_last_data = $this->get_last_5_weeks();
 			$weekly_data = array('first_week'=>$first_last_data['first_week'], 'last_week'=>$first_last_data['last_week'], 'post_id' => $data['post_id']);
@@ -227,15 +227,23 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			//show clicks/impressions by week #
 			$data = array('post_id'=>$post->ID);
 			$historical_tracking = $this->get_historical_tracking($data);
-			if($historical_tracking){
+			//echo var_dump($historical_tracking);
+			if($historical_tracking && isset($historical_tracking['clicks'])){
 				foreach($historical_tracking['clicks'] AS $key=>$value){
 					$weekly_data[] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', '".$historical_tracking['clicks'][$key]->clicks."', '".$historical_tracking['impressions'][$key]->impressions."']";
 				}
 			}
+			/*$weekly_string = '["07-22-2019","33","333"]';*/
+			if(isset($weekly_data)){
+				$weekly_string = implode(',',$weekly_data);
+			} else {
+				$weekly_string = '';
+			}
 			
-			$weekly_string = implode(',',$weekly_data);
 			if($weekly_string){
 					echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
+					var weekly_string = $weekly_string;
+					console.log(weekly_string);
 					google.charts.load('current', {'packages':['bar']});
 					google.charts.setOnLoadCallback(drawChart);
 
@@ -255,7 +263,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 							colors: ['#4d6dc3', '#8097d4']
 						};
 
-						var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+						var chart = new google.charts.Bar(document.getElementById('link_tracking_columnchart_material'));
 
 						chart.draw(data, google.charts.Bar.convertOptions(options));
 					}

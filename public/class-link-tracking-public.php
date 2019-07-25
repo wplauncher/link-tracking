@@ -180,7 +180,7 @@ class Link_Tracking_Public {
 		} else {
 			$first_week = $data['first_week'];
 			$last_week = $data['last_week'];
-			$clicks = $wpdb->get_row("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
+			$clicks = $wpdb->get_results("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
 		}
 		
 		return $clicks;
@@ -237,7 +237,7 @@ class Link_Tracking_Public {
 		} else {
 			$first_week = $data['first_week'];
 			$last_week = $data['last_week'];
-			$impressions = $wpdb->get_row("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
+			$impressions = $wpdb->get_results("SELECT * FROM $table_name WHERE post_id = '$post_id' and week >= '$first_week' and week <= '$last_week' ORDER BY week DESC");
 		}
 		return $impressions;
 	}
