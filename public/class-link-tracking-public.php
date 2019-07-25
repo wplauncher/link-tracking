@@ -160,6 +160,7 @@ class Link_Tracking_Public {
 	public function get_current_week(){
 		$time = strtotime('monday this week');
 		$current_week = date('Y-m-d', $time);
+		
 		return $current_week;
 	}
 	public function get_current_week_full(){
