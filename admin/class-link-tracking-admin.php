@@ -230,7 +230,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			echo var_dump($historical_tracking);
 			if($historical_tracking && isset($historical_tracking['clicks'])){
 				foreach($historical_tracking['clicks'] AS $key=>$value){
-					$weekly_data[] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', '".$historical_tracking['clicks'][$key]->clicks."', '".$historical_tracking['impressions'][$key]->impressions."']";
+					$weekly_data[] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', ".$historical_tracking['clicks'][$key]->clicks.", ".$historical_tracking['impressions'][$key]->impressions."]";
 				}
 			}
 			/*$weekly_string = '["07-22-2019","33","333"]';*/
@@ -257,7 +257,8 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 								subtitle: 'Clicks and Impressions by Week',
 							},
 							bars: 'vertical',
-							vAxis: {format: 'decimal'},
+							bar: {groupWidth: '95%'},
+							vAxis: { gridlines: { count: 4 } },
 							height: 400,
 							colors: ['#4d6dc3', '#8097d4']
 						};
