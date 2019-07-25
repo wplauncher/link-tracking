@@ -227,7 +227,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			//show clicks/impressions by week #
 			$data = array('post_id'=>$post->ID);
 			$historical_tracking = $this->get_historical_tracking($data);
-			//echo var_dump($historical_tracking);
+			echo var_dump($historical_tracking);
 			if($historical_tracking && isset($historical_tracking['clicks'])){
 				foreach($historical_tracking['clicks'] AS $key=>$value){
 					$weekly_data[] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', '".$historical_tracking['clicks'][$key]->clicks."', '".$historical_tracking['impressions'][$key]->impressions."']";
