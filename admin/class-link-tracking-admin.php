@@ -242,8 +242,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			
 			if($weekly_string){
 					echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
-					var weekly_string = $weekly_string;
-					console.log(weekly_string);
+					
 					google.charts.load('current', {'packages':['bar']});
 					google.charts.setOnLoadCallback(drawChart);
 
