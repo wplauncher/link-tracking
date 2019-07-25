@@ -227,7 +227,7 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			//show clicks/impressions by week #
 			$data = array('post_id'=>$post->ID);
 			$historical_tracking = $this->get_historical_tracking($data);
-			echo var_dump($historical_tracking);
+			//echo var_dump($historical_tracking);
 			if($historical_tracking && isset($historical_tracking['clicks'])){
 				foreach($historical_tracking['clicks'] AS $key=>$value){
 					$weekly_data[] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', ".$historical_tracking['clicks'][$key]->clicks.", ".$historical_tracking['impressions'][$key]->impressions."]";
@@ -240,35 +240,6 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 				$weekly_string = '';
 			}
 			
-			if($weekly_string){
-					echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
-					
-					google.charts.load('current', {'packages':['bar']});
-					google.charts.setOnLoadCallback(drawChart);
-
-					function drawChart() {
-						var data = google.visualization.arrayToDataTable([
-							['Week of', 'Clicks', 'Impressions'],".$weekly_string."
-						]);
-
-						var options = {
-							chart: {
-								title: 'Link Tracking',
-								subtitle: 'Clicks and Impressions by Week',
-							},
-							bars: 'vertical',
-							bar: {groupWidth: '95%'},
-							vAxis: { gridlines: { count: 4 } },
-							height: 400,
-							colors: ['#4d6dc3', '#8097d4']
-						};
-
-						var chart = new google.charts.Bar(document.getElementById('link_tracking_columnchart_material'));
-
-						chart.draw(data, google.charts.Bar.convertOptions(options));
-					}
-				</script></div>";
-			}
 			echo '<ul class="link_tracking_links_data_metabox">';
 			
 			echo '<li><label for="'.$this->plugin_name.'_url">';
@@ -357,8 +328,38 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 							);
 			// this gets the post_meta value and echos back the input
 			$this->link_tracking_render_settings_field($args);
-		echo '</li>';
-			echo '</ul></div>';
+		echo '</li></ul>';
+			if($weekly_string){
+				echo "<div><div id='link_tracking_columnchart_material'></div><script type='text/javascript'>
+				
+				google.charts.load('current', {'packages':['bar']});
+				google.charts.setOnLoadCallback(drawChart);
+
+				function drawChart() {
+					var data = google.visualization.arrayToDataTable([
+						['Week of', 'Clicks', 'Impressions'],".$weekly_string."
+					]);
+
+					var options = {
+						chart: {
+							title: 'Link Tracking',
+							subtitle: 'Clicks and Impressions by Week',
+						},
+						bars: 'vertical',
+						bar: {groupWidth: '95%'},
+						vAxis: { gridlines: { count: 4 } },
+						height: 400,
+						colors: ['#4d6dc3', '#8097d4']
+					};
+
+					var chart = new google.charts.Bar(document.getElementById('link_tracking_columnchart_material'));
+
+					chart.draw(data, google.charts.Bar.convertOptions(options));
+				}
+			</script></div>";
+		}
+
+			echo '</div>';
 		
 		}
 		public function get_target_list(){
