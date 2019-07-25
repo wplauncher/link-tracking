@@ -202,9 +202,16 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			echo '</ul></div>';
 		
 		}
+		public function get_last_5_weeks(){
+			$start = strtotime('4 mondays ago');
+			$end = strtotime('monday this week');
+			$data['first_week'] = date('Y-m-d H:i:s', $start);
+			$data['last_week'] = date('Y-m-d H:i:s', $end);
+			return $data;
+		}
 		public function get_historical_tracking($data){
 			$Link_Tracking_Public = new Link_Tracking_Public($this->plugin_name, $this->version);
-			$first_last_data = $Link_Tracking_Public->get_last_5_weeks();
+			$first_last_data = $this->get_last_5_weeks();
 			$weekly_data = array('first_week'=>$first_last_data['first_week'], 'last_week'=>$first_last_data['last_week'], 'post_id' => $data['post_id']);
 
 			$weekly_clicks = $Link_Tracking_Public->get_clicks($weekly_data);
@@ -219,9 +226,10 @@ public function linkTrackingShortcode( $atts, $content = "" ) {
 			//show clicks/impressions by week #
 			$data = array('post_id'=>$post->ID);
 			$historical_tracking = $this->get_historical_tracking($data);
-			$item_total = count($historical_tracking['impressions'])-1;
-			foreach($historical_tracking['clicks'] AS $key=>$value){
-				$weekly_data[$key] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', '".$historical_tracking['clicks'][$key]->clicks."', '".$historical_tracking['impressions'][$key]->impressions."']";
+			if($historical_tracking){
+				foreach($historical_tracking['clicks'] AS $key=>$value){
+					$weekly_data[] = "['".date('m-d-Y',strtotime($historical_tracking['clicks'][$key]->week))."', '".$historical_tracking['clicks'][$key]->clicks."', '".$historical_tracking['impressions'][$key]->impressions."']";
+				}
 			}
 			
 			$weekly_string = implode(',',$weekly_data);

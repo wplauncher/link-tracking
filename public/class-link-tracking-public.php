@@ -157,13 +157,6 @@ class Link_Tracking_Public {
 		/* close connection */
 		exit();	
 	}
-	public function get_last_5_weeks(){
-		$start = strtotime('4 mondays ago');
-		$end = strtotime('monday this week');
-		$data['first_week'] = date('Y-m-d H:i:s', $start);
-		$data['last_week'] = date('Y-m-d H:i:s', $end);
-		return $data;
-	}
 	public function get_current_week(){
 		$time = strtotime('monday this week');
 		$current_week = date('Y-m-d', $time);
